@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://dprs74geh3fjt"]
 
 [ext_resource type="Script" uid="uid://bds6eqsxfoxxl" path="res://addons/CoreUI/Examples/DemoGameController.cs" id="1_controller"]
-[ext_resource type="PackedScene" path="res://addons/CoreUI/Scenes/PauseMenu.tscn" id="2_pause"]
-[ext_resource type="PackedScene" path="res://addons/CoreUI/Scenes/SettingsMenu.tscn" id="3_settings"]
+[ext_resource type="PackedScene" uid="uid://c04rii66wl3n6" path="res://addons/CoreUI/Scenes/PauseMenu.tscn" id="2_pause"]
+[ext_resource type="PackedScene" uid="uid://ogir38eqd20i" path="res://addons/CoreUI/Scenes/SettingsMenu.tscn" id="3_settings"]
 
 [node name="DemoGame" type="Node2D" unique_id=1738823271]
 script = ExtResource("1_controller")
@@ -28,9 +28,18 @@ offset_bottom = 360.0
 text = "Press Escape to open the pause menu."
 horizontal_alignment = 1
 
-[node name="PauseMenu" parent="." unique_id=1958764231 instance=ExtResource("2_pause")]
-offset_right = 1152.0
-offset_bottom = 648.0
+[node name="PauseMenu" parent="." unique_id=422357253 instance=ExtResource("2_pause")]
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 575.0
+offset_top = 333.0
+offset_right = 575.0
+offset_bottom = 333.0
+grow_horizontal = 1
+grow_vertical = 1
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
 [node name="SettingsMenu" parent="." unique_id=1641372563 instance=ExtResource("3_settings")]
 anchors_preset = 0
@@ -40,5 +49,3 @@ offset_right = 1152.0
 offset_bottom = 648.0
 grow_horizontal = 1
 grow_vertical = 1
-MenuId = "Settings"
-IsOverlay = false

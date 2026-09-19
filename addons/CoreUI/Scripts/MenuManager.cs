@@ -4,6 +4,9 @@ using System.Linq;
 
 public partial class MenuManager : CanvasLayer
 {
+    // 1. Add the static Instance property
+    public static MenuManager Instance { get; private set; }
+
     // Dictionary to hold all available menus in the scene by their MenuId
     private Dictionary<string, BaseMenu> _registeredMenus = new Dictionary<string, BaseMenu>();
     
@@ -11,6 +14,17 @@ public partial class MenuManager : CanvasLayer
     private Stack<BaseMenu> _menuStack = new Stack<BaseMenu>();
 
     public IReadOnlyCollection<BaseMenu> OpenMenus => _menuStack;
+
+    // 2. Add _EnterTree to initialize the Instance
+    public override void _EnterTree()
+    {
+        if (Instance != null && Instance != this)
+        {
+            QueueFree();
+            return;
+        }
+        Instance = this;
+    }
 
     public override void _Ready()
     {
@@ -108,7 +122,7 @@ public partial class MenuManager : CanvasLayer
         UpdatePauseState();
     }
 
-    private void CloseAllMenus()
+    public void CloseAllMenus()
     {
         while (_menuStack.Count > 0)
         {

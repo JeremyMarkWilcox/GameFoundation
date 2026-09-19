@@ -3,21 +3,25 @@
 [ext_resource type="PackedScene" uid="uid://jtjknye0mvi2" path="res://addons/CoreUI/Scenes/BaseMenu.tscn" id="1_mn8h5"]
 [ext_resource type="Texture2D" uid="uid://cf3acei12geoq" path="res://icon.svg" id="2_o1ko7"]
 [ext_resource type="Script" uid="uid://br1ndu5aohfnp" path="res://addons/CoreUI/Examples/MainMenuController.cs" id="3_controller"]
+[ext_resource type="PackedScene" uid="uid://dprs74geh3fjt" path="res://addons/CoreUI/Examples/DemoGame.tscn" id="3_d05v8"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_x3b3x"]
 font_size = 100
 
-[node name="MainMenu" unique_id=1072412484 node_paths=PackedStringArray("FirstFocusElement", "FallbackFocusElement") instance=ExtResource("1_mn8h5")]
+[node name="MainMenu" unique_id=1072412484 node_paths=PackedStringArray("ContinueButton", "StartButton", "SettingsButton", "QuitButton", "FirstFocusElement", "FallbackFocusElement") instance=ExtResource("1_mn8h5")]
 script = ExtResource("3_controller")
-demoScenePath = "res://addons/CoreUI/Examples/DemoGame.tscn"
+DemoScene = ExtResource("3_d05v8")
+ContinueButton = NodePath("MarginContainer/MainLayout/VBoxContainer/ContinueButton")
+StartButton = NodePath("MarginContainer/MainLayout/VBoxContainer/StartGameButton2")
+SettingsButton = NodePath("MarginContainer/MainLayout/VBoxContainer/SettingsButton")
+QuitButton = NodePath("MarginContainer/MainLayout/VBoxContainer/QuitButton")
 MenuId = "MainMenu"
-FirstFocusElement = NodePath("MarginContainer/MainLayout/VBoxContainer/StartGameButton")
-FallbackFocusElement = NodePath("MarginContainer/MainLayout/VBoxContainer/StartGameButton")
+FirstFocusElement = NodePath("MarginContainer/MainLayout/VBoxContainer/ContinueButton")
+FallbackFocusElement = NodePath("MarginContainer/MainLayout/VBoxContainer/ContinueButton")
 
 [node name="Background" parent="." index="0" unique_id=237105050]
 offset_right = 1151.0
 offset_bottom = 651.0
-mouse_filter = 2
 texture = ExtResource("2_o1ko7")
 
 [node name="MarginContainer" parent="." index="1" unique_id=186078399]
@@ -31,15 +35,19 @@ label_settings = SubResource("LabelSettings_x3b3x")
 size_flags_horizontal = 4
 theme_override_constants/separation = 50
 
-[node name="StartGameButton" type="Button" parent="MarginContainer/MainLayout/VBoxContainer" index="0" unique_id=939184734]
+[node name="ContinueButton" type="Button" parent="MarginContainer/MainLayout/VBoxContainer" index="0" unique_id=939184734]
+layout_mode = 2
+text = "Continue"
+
+[node name="StartGameButton2" type="Button" parent="MarginContainer/MainLayout/VBoxContainer" index="1" unique_id=1755794418]
 layout_mode = 2
 text = "Start Game"
 
-[node name="SettingsButton" type="Button" parent="MarginContainer/MainLayout/VBoxContainer" index="1" unique_id=1926910302]
+[node name="SettingsButton" type="Button" parent="MarginContainer/MainLayout/VBoxContainer" index="2" unique_id=1926910302]
 layout_mode = 2
 text = "Settings"
 
-[node name="QuitButton" type="Button" parent="MarginContainer/MainLayout/VBoxContainer" index="2" unique_id=437158547]
+[node name="QuitButton" type="Button" parent="MarginContainer/MainLayout/VBoxContainer" index="3" unique_id=437158547]
 layout_mode = 2
 text = "Quit
 "

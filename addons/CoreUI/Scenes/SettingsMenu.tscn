@@ -1,19 +1,20 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://ogir38eqd20i"]
 
 [ext_resource type="Script" uid="uid://dvr4yk7dryuu2" path="res://addons/CoreUI/Examples/SettingsMenu.cs" id="2_settings"]
 
-[node name="SettingsMenu" type="Control"]
+[node name="SettingsMenu" type="Control" unique_id=426448058 node_paths=PackedStringArray("FirstFocusElement", "FallbackFocusElement")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-MenuId = "Settings"
-IsOverlay = false
 script = ExtResource("2_settings")
+MenuId = "Settings"
+FirstFocusElement = NodePath("MarginContainer/MainLayout/Controls/BackButton")
+FallbackFocusElement = NodePath("MarginContainer/MainLayout/Controls/VolumeSlider")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=1180016245]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,9 +24,9 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.035, 0.055, 0.09, 1)
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 1
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=183059730]
 z_index = 1
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -36,35 +37,34 @@ theme_override_constants/margin_top = 140
 theme_override_constants/margin_right = 250
 theme_override_constants/margin_bottom = 140
 
-[node name="MainLayout" type="VBoxContainer" parent="MarginContainer"]
+[node name="MainLayout" type="VBoxContainer" parent="MarginContainer" unique_id=700098101]
 layout_mode = 2
-alignment = 1
 theme_override_constants/separation = 18
+alignment = 1
 
-[node name="Title" type="Label" parent="MarginContainer/MainLayout"]
+[node name="Title" type="Label" parent="MarginContainer/MainLayout" unique_id=1101105608]
 layout_mode = 2
 text = "Settings"
 horizontal_alignment = 1
 
-[node name="Controls" type="VBoxContainer" parent="MarginContainer/MainLayout"]
+[node name="Controls" type="VBoxContainer" parent="MarginContainer/MainLayout" unique_id=1446722800]
 layout_mode = 2
-alignment = 1
 theme_override_constants/separation = 18
+alignment = 1
 
-[node name="VolumeLabel" type="Label" parent="MarginContainer/MainLayout/Controls"]
+[node name="VolumeLabel" type="Label" parent="MarginContainer/MainLayout/Controls" unique_id=676323584]
 layout_mode = 2
 text = "Master Volume"
 
-[node name="VolumeSlider" type="HSlider" parent="MarginContainer/MainLayout/Controls"]
+[node name="VolumeSlider" type="HSlider" parent="MarginContainer/MainLayout/Controls" unique_id=436689593]
 layout_mode = 2
-min_value = 0.0
 max_value = 1.0
 step = 0.05
 
-[node name="FullscreenToggle" type="CheckButton" parent="MarginContainer/MainLayout/Controls"]
+[node name="FullscreenToggle" type="CheckButton" parent="MarginContainer/MainLayout/Controls" unique_id=1441147546]
 layout_mode = 2
 text = "Fullscreen"
 
-[node name="BackButton" type="Button" parent="MarginContainer/MainLayout/Controls"]
+[node name="BackButton" type="Button" parent="MarginContainer/MainLayout/Controls" unique_id=1714822711]
 layout_mode = 2
 text = "Back"

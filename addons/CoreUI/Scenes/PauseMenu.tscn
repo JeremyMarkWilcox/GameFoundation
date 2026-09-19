@@ -1,8 +1,9 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://c04rii66wl3n6"]
 
-[ext_resource type="Script" path="res://addons/CoreUI/Examples/PauseMenu.cs" id="1_pause"]
+[ext_resource type="Script" uid="uid://yrlr0hs7h5wo" path="res://addons/CoreUI/Examples/PauseMenu.cs" id="1_pause"]
+[ext_resource type="PackedScene" uid="uid://0bmqlprqy71l" path="res://addons/CoreUI/Examples/KitbashMainMenu.tscn" id="2_op70g"]
 
-[node name="PauseMenu" type="Control"]
+[node name="PauseMenu" type="Control" unique_id=422357253 node_paths=PackedStringArray("FirstFocusElement", "FallbackFocusElement")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,10 +12,12 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 script = ExtResource("1_pause")
+MainMenuScene = ExtResource("2_op70g")
 MenuId = "Pause"
-PausesGame = true
+FirstFocusElement = NodePath("Panel/Margin/MainLayout/ResumeButton")
+FallbackFocusElement = NodePath("Panel/Margin/MainLayout/MainMenuButton")
 
-[node name="Dimmer" type="ColorRect" parent="."]
+[node name="Dimmer" type="ColorRect" parent="." unique_id=116609555]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -24,9 +27,9 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.65)
 
-[node name="Panel" type="PanelContainer" parent="."]
-layout_mode = 1
+[node name="Panel" type="PanelContainer" parent="." unique_id=651339618]
 z_index = 1
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -39,35 +42,35 @@ offset_bottom = 190.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Margin" type="MarginContainer" parent="Panel"]
+[node name="Margin" type="MarginContainer" parent="Panel" unique_id=1757117924]
 layout_mode = 2
 theme_override_constants/margin_left = 32
 theme_override_constants/margin_top = 32
 theme_override_constants/margin_right = 32
 theme_override_constants/margin_bottom = 32
 
-[node name="MainLayout" type="VBoxContainer" parent="Panel/Margin"]
+[node name="MainLayout" type="VBoxContainer" parent="Panel/Margin" unique_id=1266599225]
 layout_mode = 2
-alignment = 1
 theme_override_constants/separation = 16
+alignment = 1
 
-[node name="Title" type="Label" parent="Panel/Margin/MainLayout"]
+[node name="Title" type="Label" parent="Panel/Margin/MainLayout" unique_id=186504793]
 layout_mode = 2
 text = "Paused"
 horizontal_alignment = 1
 
-[node name="ResumeButton" type="Button" parent="Panel/Margin/MainLayout"]
+[node name="ResumeButton" type="Button" parent="Panel/Margin/MainLayout" unique_id=1873983689]
 layout_mode = 2
 text = "Resume"
 
-[node name="SettingsButton" type="Button" parent="Panel/Margin/MainLayout"]
+[node name="SettingsButton" type="Button" parent="Panel/Margin/MainLayout" unique_id=940564121]
 layout_mode = 2
 text = "Settings"
 
-[node name="RestartButton" type="Button" parent="Panel/Margin/MainLayout"]
+[node name="RestartButton" type="Button" parent="Panel/Margin/MainLayout" unique_id=722076590]
 layout_mode = 2
 text = "Restart"
 
-[node name="MainMenuButton" type="Button" parent="Panel/Margin/MainLayout"]
+[node name="MainMenuButton" type="Button" parent="Panel/Margin/MainLayout" unique_id=2095815878]
 layout_mode = 2
 text = "Quit to Main Menu"

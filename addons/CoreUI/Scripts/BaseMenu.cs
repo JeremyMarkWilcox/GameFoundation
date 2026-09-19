@@ -1,10 +1,12 @@
 using Godot;
 using System.Collections.Generic;
+using CoreUI; // Added to access InputManager and MenuManager
 
 [GlobalClass]
 public partial class BaseMenu : Control
 {
     private bool _buttonsHooked;
+    
     [ExportCategory("Menu Configuration")]
     [Export(PropertyHint.None, "Unique ID used to call this menu (e.g., 'Inventory', 'Settings')")]
     public string MenuId { get; private set; }
@@ -16,11 +18,12 @@ public partial class BaseMenu : Control
     public bool PausesGame { get; private set; } = true;
 
     [ExportCategory("Navigation")]
-    [Export(PropertyHint.None, "The Control that gets focus when this menu opens.")]
-    public Control FirstFocusElement { get; private set; }
+    [Export(PropertyHint.None, "The Control that gets focus when this menu opens on a Gamepad.")]
+    public Control FirstFocusElement { get; protected set; }
 
     [Export(PropertyHint.None, "The Control to focus if the previous focus is lost.")]
     public Control FallbackFocusElement { get; private set; }
+
 
     public override void _Ready()
     {
@@ -31,15 +34,25 @@ public partial class BaseMenu : Control
         // Hide by default when the scene loads
         Hide();
 
-        GetNodeOrNull<MenuManager>("/root/MenuManager")?.RegisterMenu(this);
+        // Use the Singleton instead of GetNode
+        MenuManager.Instance?.RegisterMenu(this);
         
-        // Concrete menu controllers own their button actions. Keeping signal
-        // connections out of the base class prevents duplicate C# signal errors.
+        // Subscribe to the global input manager for device swapping
+        if (InputManager.Instance != null)
+        {
+            InputManager.Instance.OnDeviceChanged += HandleDeviceChanged;
+        }
     }
 
     public override void _ExitTree()
     {
-        GetNodeOrNull<MenuManager>("/root/MenuManager")?.UnregisterMenu(this);
+        MenuManager.Instance?.UnregisterMenu(this);
+
+        // Clean up subscription to prevent memory leaks
+        if (InputManager.Instance != null)
+        {
+            InputManager.Instance.OnDeviceChanged -= HandleDeviceChanged;
+        }
     }
 
     /// <summary>
@@ -72,13 +85,29 @@ public partial class BaseMenu : Control
         CallDeferred(MethodName.GrabInitialFocus);
     }
 
+    private void HandleDeviceChanged(InputManager.InputDevice newDevice)
+    {
+        // Only steal focus if THIS specific menu is currently visible on screen
+        if (Visible && newDevice == InputManager.InputDevice.Gamepad)
+        {
+            GrabInitialFocus();
+        }
+    }
+
     private void GrabInitialFocus()
     {
+        // Only force focus if the player is using a Gamepad so we don't annoy mouse users
+        if (InputManager.Instance != null && InputManager.Instance.CurrentDevice != InputManager.InputDevice.Gamepad)
+        {
+            return; 
+        }
+
         if (FirstFocusElement != null && FirstFocusElement.IsInsideTree() && FirstFocusElement.Visible)
         {
             FirstFocusElement.GrabFocus();
+            GD.Print($"[{MenuId}] Grabbed focus on {FirstFocusElement.Name}");
         }
-        else if (FallbackFocusElement != null)
+        else if (FallbackFocusElement != null && FallbackFocusElement.IsInsideTree() && FallbackFocusElement.Visible)
         {
             FallbackFocusElement.GrabFocus();
         }
