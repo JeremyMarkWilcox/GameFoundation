@@ -1,0 +1,34 @@
+config_version=5
+
+[application]
+
+config/name="Game Foundation"
+run/main_scene="res://addons/CoreUI/Examples/MainMenuRoot.tscn"
+config/features=PackedStringArray("4.7", "C#", "Mobile")
+config/icon="res://icon.svg"
+
+[autoload]
+
+MenuManager="*res://addons/CoreUI/Scripts/MenuManager.cs"
+SceneFlowManager="*res://addons/CoreUI/Scripts/SceneFlowManager.cs"
+SettingsManager="*res://addons/CoreUI/Scripts/SettingsManager.cs"
+AudioManager="*res://addons/CoreUI/Scripts/AudioManager.cs"
+PauseController="*res://addons/CoreUI/Scripts/PauseController.cs"
+
+[display]
+
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[dotnet]
+
+project/assembly_name="Main Menu"
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+rendering_device/driver.windows="d3d12"
+renderer/rendering_method="mobile"
