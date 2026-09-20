@@ -8,6 +8,7 @@ namespace CoreUI
     /// </summary>
     public class SaveData
     {
+        public int SchemaVersion { get; set; } = 1;
         // Core tracking
         public string LastLevelPath { get; set; } = string.Empty;
         public string LastCheckpointId { get; set; } = string.Empty;

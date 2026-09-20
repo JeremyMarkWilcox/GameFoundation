@@ -1,21 +1,27 @@
-[gd_scene format=3 uid="uid://ogir38eqd20i"]
+[gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://dvr4yk7dryuu2" path="res://addons/CoreUI/Examples/SettingsMenu.cs" id="2_settings"]
+[ext_resource type="Script" path="res://addons/CoreUI/Scripts/SettingsMenu.cs" id="1"]
+[ext_resource type="Theme" path="res://addons/CoreUI/Resources/FoundationTheme.tres" id="theme"]
+[ext_resource type="Script" path="res://addons/CoreUI/Scripts/RebindButton.cs" id="rebind"]
 
-[node name="SettingsMenu" type="Control" unique_id=426448058 node_paths=PackedStringArray("FirstFocusElement", "FallbackFocusElement")]
+[node name="SettingsMenu" type="Control" node_paths=PackedStringArray("VolumeSlider", "FullscreenToggle", "BackButton", "FirstFocusElement", "FallbackFocusElement")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("2_settings")
+script = ExtResource("1")
+theme = ExtResource("theme")
 MenuId = "Settings"
-FirstFocusElement = NodePath("MarginContainer/MainLayout/Controls/BackButton")
-FallbackFocusElement = NodePath("MarginContainer/MainLayout/Controls/VolumeSlider")
+VolumeSlider = NodePath("Center/Content/VolumeSlider")
+FullscreenToggle = NodePath("Center/Content/FullscreenToggle")
+BackButton = NodePath("Center/Content/BackButton")
+FirstFocusElement = NodePath("Center/Content/VolumeSlider")
+FallbackFocusElement = NodePath("Center/Content/BackButton")
 
-[node name="Background" type="ColorRect" parent="." unique_id=1180016245]
-layout_mode = 1
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -24,47 +30,47 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.035, 0.055, 0.09, 1)
 
-[node name="MarginContainer" type="MarginContainer" parent="." unique_id=183059730]
-z_index = 1
-layout_mode = 1
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 250
-theme_override_constants/margin_top = 140
-theme_override_constants/margin_right = 250
-theme_override_constants/margin_bottom = 140
 
-[node name="MainLayout" type="VBoxContainer" parent="MarginContainer" unique_id=700098101]
+[node name="Content" type="VBoxContainer" parent="Center"]
 layout_mode = 2
-theme_override_constants/separation = 18
-alignment = 1
+custom_minimum_size = Vector2(300, 0)
+theme_override_constants/separation = 8
 
-[node name="Title" type="Label" parent="MarginContainer/MainLayout" unique_id=1101105608]
+[node name="Title" type="Label" parent="Center/Content"]
 layout_mode = 2
-text = "Settings"
+text = "SETTINGS"
 horizontal_alignment = 1
+theme_override_font_sizes/font_size = 26
 
-[node name="Controls" type="VBoxContainer" parent="MarginContainer/MainLayout" unique_id=1446722800]
+[node name="VolumeLabel" type="Label" parent="Center/Content"]
 layout_mode = 2
-theme_override_constants/separation = 18
-alignment = 1
+text = "Master volume"
 
-[node name="VolumeLabel" type="Label" parent="MarginContainer/MainLayout/Controls" unique_id=676323584]
-layout_mode = 2
-text = "Master Volume"
-
-[node name="VolumeSlider" type="HSlider" parent="MarginContainer/MainLayout/Controls" unique_id=436689593]
+[node name="VolumeSlider" type="HSlider" parent="Center/Content"]
 layout_mode = 2
 max_value = 1.0
 step = 0.05
 
-[node name="FullscreenToggle" type="CheckButton" parent="MarginContainer/MainLayout/Controls" unique_id=1441147546]
+[node name="FullscreenToggle" type="CheckButton" parent="Center/Content"]
 layout_mode = 2
 text = "Fullscreen"
 
-[node name="BackButton" type="Button" parent="MarginContainer/MainLayout/Controls" unique_id=1714822711]
+[node name="BindingLabel" type="Label" parent="Center/Content"]
+layout_mode = 2
+text = "Save binding — Escape / B cancels"
+
+[node name="SaveBinding" type="Button" parent="Center/Content"]
+layout_mode = 2
+script = ExtResource("rebind")
+ActionName = &"save_game"
+
+[node name="BackButton" type="Button" parent="Center/Content"]
 layout_mode = 2
 text = "Back"

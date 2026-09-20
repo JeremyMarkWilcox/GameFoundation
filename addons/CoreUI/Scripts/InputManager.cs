@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Linq;
 using Godot.Collections; // Needed for Array
 
 namespace CoreUI
@@ -19,7 +20,11 @@ namespace CoreUI
         // Fired whenever the player swaps between controller and keyboard
         public event Action<InputDevice> OnDeviceChanged;
 
-        private const string SettingsFilePath = "user://settings.cfg";
+        private static string SettingsFilePath => SettingsStore.Path;
+
+        public override void _Ready() => LoadKeybinds(InputMap.GetActions().Select(action => action.ToString()).ToArray());
+
+        public override void _ExitTree() { if (Instance == this) Instance = null; }
 
         public override void _EnterTree()
         {
@@ -60,15 +65,7 @@ namespace CoreUI
         {
             GD.Print($"[InputManager] Input device switched to: {CurrentDevice}");
 
-            if (CurrentDevice == InputDevice.Gamepad)
-            {
-                Input.MouseMode = Input.MouseModeEnum.Hidden;
-            }
-            else
-            {
-                Input.MouseMode = Input.MouseModeEnum.Visible;
-            }
-
+            // Device detection is global; the active menu/player owns mouse policy.
             OnDeviceChanged?.Invoke(CurrentDevice);
         }
 
@@ -108,19 +105,13 @@ namespace CoreUI
 
         private void SaveKeybinds(string actionName, InputEvent newEvent, bool isGamepad)
         {
-            ConfigFile config = new ConfigFile();
-            
-            // Load existing settings if the file exists so we don't overwrite audio/display settings[cite: 1]
-            if (FileAccess.FileExists(SettingsFilePath))
-            {
-                config.Load(SettingsFilePath);
-            }
+            ConfigFile config = SettingsStore.Read();
 
             // Save under a section specific to the device type
             string section = isGamepad ? "GamepadBinds" : "KeyboardBinds";
             config.SetValue(section, actionName, newEvent);
 
-            config.Save(SettingsFilePath);
+            SettingsStore.Write(config);
         }
 
         /// <summary>

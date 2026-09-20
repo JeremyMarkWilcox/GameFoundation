@@ -1,53 +1,69 @@
-[gd_scene format=3 uid="uid://0bmqlprqy71l"]
+[gd_scene format=3]
 
-[ext_resource type="PackedScene" uid="uid://jtjknye0mvi2" path="res://addons/CoreUI/Scenes/BaseMenu.tscn" id="1_mn8h5"]
-[ext_resource type="Texture2D" uid="uid://cf3acei12geoq" path="res://icon.svg" id="2_o1ko7"]
-[ext_resource type="Script" uid="uid://br1ndu5aohfnp" path="res://addons/CoreUI/Examples/MainMenuController.cs" id="3_controller"]
-[ext_resource type="PackedScene" uid="uid://dprs74geh3fjt" path="res://addons/CoreUI/Examples/DemoGame.tscn" id="3_d05v8"]
+[ext_resource type="Script" path="res://addons/CoreUI/Examples/MainMenuController.cs" id="1"]
+[ext_resource type="Theme" path="res://addons/CoreUI/Resources/FoundationTheme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://addons/CoreUI/Examples/DemoGame.tscn" id="game"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_x3b3x"]
-font_size = 100
-
-[node name="MainMenu" unique_id=1072412484 node_paths=PackedStringArray("ContinueButton", "StartButton", "SettingsButton", "QuitButton", "FirstFocusElement", "FallbackFocusElement") instance=ExtResource("1_mn8h5")]
-script = ExtResource("3_controller")
-DemoScene = ExtResource("3_d05v8")
-ContinueButton = NodePath("MarginContainer/MainLayout/VBoxContainer/ContinueButton")
-StartButton = NodePath("MarginContainer/MainLayout/VBoxContainer/StartGameButton2")
-SettingsButton = NodePath("MarginContainer/MainLayout/VBoxContainer/SettingsButton")
-QuitButton = NodePath("MarginContainer/MainLayout/VBoxContainer/QuitButton")
+[node name="MainMenu" type="Control" node_paths=PackedStringArray("ContinueButton", "StartButton", "SettingsButton", "QuitButton", "FirstFocusElement", "FallbackFocusElement")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+theme = ExtResource("theme")
 MenuId = "MainMenu"
-FirstFocusElement = NodePath("MarginContainer/MainLayout/VBoxContainer/ContinueButton")
-FallbackFocusElement = NodePath("MarginContainer/MainLayout/VBoxContainer/ContinueButton")
+CanGoBack = false
+DemoScene = ExtResource("game")
+ContinueButton = NodePath("Center/Content/ContinueButton")
+StartButton = NodePath("Center/Content/StartButton")
+SettingsButton = NodePath("Center/Content/SettingsButton")
+QuitButton = NodePath("Center/Content/QuitButton")
+FirstFocusElement = NodePath("Center/Content/StartButton")
+FallbackFocusElement = NodePath("Center/Content/StartButton")
 
-[node name="Background" parent="." index="0" unique_id=237105050]
-offset_right = 1151.0
-offset_bottom = 651.0
-texture = ExtResource("2_o1ko7")
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.035, 0.055, 0.09, 1)
 
-[node name="MarginContainer" parent="." index="1" unique_id=186078399]
-theme_override_constants/margin_bottom = 64
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="Title" parent="MarginContainer/MainLayout" parent_id_path=PackedInt32Array(2049454) index="0" unique_id=235171333]
-text = "Game Title"
-label_settings = SubResource("LabelSettings_x3b3x")
+[node name="Content" type="VBoxContainer" parent="Center"]
+layout_mode = 2
+custom_minimum_size = Vector2(300, 0)
+theme_override_constants/separation = 8
 
-[node name="VBoxContainer" parent="MarginContainer/MainLayout" parent_id_path=PackedInt32Array(2049454) index="2" unique_id=1441060176]
-size_flags_horizontal = 4
-theme_override_constants/separation = 50
+[node name="Title" type="Label" parent="Center/Content"]
+layout_mode = 2
+text = "GAME FOUNDATION"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 26
 
-[node name="ContinueButton" type="Button" parent="MarginContainer/MainLayout/VBoxContainer" index="0" unique_id=939184734]
+[node name="ContinueButton" type="Button" parent="Center/Content"]
 layout_mode = 2
 text = "Continue"
 
-[node name="StartGameButton2" type="Button" parent="MarginContainer/MainLayout/VBoxContainer" index="1" unique_id=1755794418]
+[node name="StartButton" type="Button" parent="Center/Content"]
 layout_mode = 2
-text = "Start Game"
+text = "New Game"
 
-[node name="SettingsButton" type="Button" parent="MarginContainer/MainLayout/VBoxContainer" index="2" unique_id=1926910302]
+[node name="SettingsButton" type="Button" parent="Center/Content"]
 layout_mode = 2
 text = "Settings"
 
-[node name="QuitButton" type="Button" parent="MarginContainer/MainLayout/VBoxContainer" index="3" unique_id=437158547]
+[node name="QuitButton" type="Button" parent="Center/Content"]
 layout_mode = 2
-text = "Quit
-"
+text = "Quit"

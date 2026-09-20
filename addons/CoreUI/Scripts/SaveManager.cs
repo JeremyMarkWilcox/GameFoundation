@@ -2,99 +2,76 @@ using Godot;
 using System;
 using System.Text.Json;
 
-namespace CoreUI
+namespace CoreUI;
+
+public partial class SaveManager : Node
 {
-    public partial class SaveManager : Node
+    public static SaveManager Instance { get; private set; }
+    public SaveData CurrentData { get; private set; } = new();
+    public int CurrentSlot { get; private set; } = 1;
+    private string GetSavePath(int slot) => SettingsStore.IsTestRun
+        ? $"user://foundation_test_save_{slot}.json" : $"user://save_slot_{slot}.json";
+    public override void _EnterTree() => Instance = this;
+    public override void _ExitTree() { if (Instance == this) Instance = null; }
+    public void NewGame(int slot = 1)
     {
-        public static SaveManager Instance { get; private set; }
-
-        // The currently active save data in memory
-        public SaveData CurrentData { get; private set; } = new SaveData();
-        public int CurrentSlot { get; private set; } = 1;
-
-        private string GetSavePath(int slot) => $"user://save_slot_{slot}.json";
-
-        public override void _EnterTree()
+        if (slot < 1) throw new ArgumentOutOfRangeException(nameof(slot));
+        CurrentSlot = slot;
+        CurrentData = new SaveData();
+    }
+    public bool SaveGame(int slot = -1)
+    {
+        if (slot == -1) slot = CurrentSlot;
+        if (slot < 1) return false;
+        var path = ProjectSettings.GlobalizePath(GetSavePath(slot));
+        var temporary = path + ".tmp";
+        try
         {
-            if (Instance != null && Instance != this)
-            {
-                QueueFree();
-                return;
-            }
-            Instance = this;
+            var json = JsonSerializer.Serialize(CurrentData, new JsonSerializerOptions { WriteIndented = true });
+            System.IO.File.WriteAllText(temporary, json);
+            if (System.IO.File.Exists(path)) System.IO.File.Replace(temporary, path, path + ".bak");
+            else System.IO.File.Move(temporary, path);
+            CurrentSlot = slot;
+            return true;
         }
-
-        /// <summary>
-        /// Serializes the current data to a JSON file.
-        /// </summary>
-        public void SaveGame(int slot = -1)
+        catch (Exception error)
         {
-            if (slot == -1) slot = CurrentSlot;
-
+            GD.PushError($"Save failed: {error.Message}");
+            return false;
+        }
+    }
+    public bool LoadGame(int slot = -1)
+    {
+        if (slot == -1) slot = CurrentSlot;
+        if (slot < 1) return false;
+        CurrentSlot = slot;
+        CurrentData = new SaveData();
+        var path = ProjectSettings.GlobalizePath(GetSavePath(slot));
+        foreach (var candidate in new[] { path, path + ".bak" })
+        {
+            if (!System.IO.File.Exists(candidate)) continue;
             try
             {
-                // WriteIndented makes the JSON readable for debugging during jams
-                string jsonString = JsonSerializer.Serialize(CurrentData, new JsonSerializerOptions { WriteIndented = true });
-                
-                using var file = FileAccess.Open(GetSavePath(slot), FileAccess.ModeFlags.Write);
-                if (file == null)
-                {
-                    GD.PrintErr($"[SaveManager] Failed to open save file for writing: {FileAccess.GetOpenError()}");
-                    return;
-                }
-
-                file.StoreString(jsonString);
-                CurrentSlot = slot;
-                GD.Print($"[SaveManager] Saved game to slot {slot}");
-            }
-            catch (Exception e)
-            {
-                GD.PrintErr($"[SaveManager] Exception during SaveGame: {e.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Deserializes JSON from a save slot back into the CurrentData object.
-        /// </summary>
-        public bool LoadGame(int slot = -1)
-        {
-            if (slot == -1) slot = CurrentSlot;
-            string path = GetSavePath(slot);
-
-            if (!FileAccess.FileExists(path))
-            {
-                GD.Print($"[SaveManager] No save found in slot {slot}. Starting fresh with default data.");
-                CurrentData = new SaveData();
-                return false;
-            }
-
-            try
-            {
-                using var file = FileAccess.Open(path, FileAccess.ModeFlags.Read);
-                string jsonString = file.GetAsText();
-                
-                CurrentData = JsonSerializer.Deserialize<SaveData>(jsonString) ?? new SaveData();
-                CurrentSlot = slot;
-                
-                GD.Print($"[SaveManager] Successfully loaded game from slot {slot}");
+                var data = JsonSerializer.Deserialize<SaveData>(System.IO.File.ReadAllText(candidate));
+                if (data == null || data.SchemaVersion != 1 || data.GameStats == null || data.GameFlags == null || data.StringData == null)
+                    continue;
+                CurrentData = data;
                 return true;
             }
-            catch (Exception e)
-            {
-                GD.PrintErr($"[SaveManager] Failed to load save, data might be corrupted: {e.Message}");
-                CurrentData = new SaveData(); // Fallback to safe state
-                return false;
-            }
+            catch (Exception error) { GD.PushWarning($"Cannot read save: {error.Message}"); }
         }
-
-        public void DeleteSave(int slot)
+        return false;
+    }
+    public bool DeleteSave(int slot)
+    {
+        if (slot < 1) return false;
+        try
         {
-            string path = GetSavePath(slot);
-            if (FileAccess.FileExists(path))
-            {
-                DirAccess.RemoveAbsolute(path);
-                GD.Print($"[SaveManager] Deleted save slot {slot}");
-            }
+            var path = ProjectSettings.GlobalizePath(GetSavePath(slot));
+            System.IO.File.Delete(path);
+            System.IO.File.Delete(path + ".bak");
+            return true;
         }
+        catch (Exception error) { GD.PushError(error.Message); return false; }
     }
 }

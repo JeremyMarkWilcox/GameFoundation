@@ -1,8 +1,12 @@
 using Godot;
+using CoreUI;
 
 public partial class SettingsManager : Node
 {
-    private const string SettingsPath = "user://settings.cfg";
+    public static SettingsManager Instance { get; private set; }
+    public override void _EnterTree() => Instance = this;
+    public override void _ExitTree() { if (Instance == this) Instance = null; }
+    private static string SettingsPath => SettingsStore.Path;
     private const string AudioSection = "audio";
     private const string DisplaySection = "display";
 
@@ -40,10 +44,10 @@ public partial class SettingsManager : Node
 
     public void SaveSettings()
     {
-        var config = new ConfigFile();
+        var config = SettingsStore.Read();
         config.SetValue(AudioSection, "master_volume", MasterVolume);
         config.SetValue(DisplaySection, "fullscreen", Fullscreen);
-        config.Save(SettingsPath);
+        SettingsStore.Write(config);
     }
 
     private void ApplySettings()

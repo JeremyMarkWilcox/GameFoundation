@@ -1,51 +1,58 @@
-[gd_scene format=3 uid="uid://dprs74geh3fjt"]
+[gd_scene format=3 uid="uid://ve6slhug4f06"]
 
-[ext_resource type="Script" uid="uid://bds6eqsxfoxxl" path="res://addons/CoreUI/Examples/DemoGameController.cs" id="1_controller"]
-[ext_resource type="PackedScene" uid="uid://c04rii66wl3n6" path="res://addons/CoreUI/Scenes/PauseMenu.tscn" id="2_pause"]
-[ext_resource type="PackedScene" uid="uid://ogir38eqd20i" path="res://addons/CoreUI/Scenes/SettingsMenu.tscn" id="3_settings"]
+[ext_resource type="Script" uid="uid://bds6eqsxfoxxl" path="res://addons/CoreUI/Examples/DemoGameController.cs" id="controller"]
+[ext_resource type="PackedScene" path="res://addons/CoreUI/Scenes/PauseMenu.tscn" id="pause"]
+[ext_resource type="PackedScene" path="res://addons/CoreUI/Scenes/SettingsMenu.tscn" id="settings"]
 
-[node name="DemoGame" type="Node2D" unique_id=1738823271]
-script = ExtResource("1_controller")
+[node name="DemoGame" type="Node2D" unique_id=1977978899 node_paths=PackedStringArray("PauseMenu", "StatusLabel")]
+script = ExtResource("controller")
+PauseMenu = NodePath("UI/PauseMenu")
+StatusLabel = NodePath("UI/HUD/Center/Content/Hint")
 
-[node name="Background" type="ColorRect" parent="." unique_id=2119064439]
-offset_right = 1152.0
-offset_bottom = 648.0
+[node name="UI" type="CanvasLayer" parent="." unique_id=2034547563]
+
+[node name="HUD" type="Control" parent="UI" unique_id=1069223513]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Background" type="ColorRect" parent="UI/HUD" unique_id=408072904]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 color = Color(0.04, 0.07, 0.11, 1)
 
-[node name="Label" type="Label" parent="." unique_id=1323305089]
-offset_left = 390.0
-offset_top = 250.0
-offset_right = 760.0
-offset_bottom = 300.0
-text = "Demo Game Scene"
+[node name="Center" type="CenterContainer" parent="UI/HUD" unique_id=551941448]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Content" type="VBoxContainer" parent="UI/HUD/Center" unique_id=123968213]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="UI/HUD/Center/Content" unique_id=727738928]
+layout_mode = 2
+text = "Foundation demo"
 horizontal_alignment = 1
 
-[node name="Hint" type="Label" parent="." unique_id=1454838848]
-offset_left = 300.0
-offset_top = 320.0
-offset_right = 852.0
-offset_bottom = 360.0
-text = "Press Escape to open the pause menu."
+[node name="Hint" type="Label" parent="UI/HUD/Center/Content" unique_id=1603292804]
+layout_mode = 2
+text = "Esc / Menu / B: pause. F5 / Y: save."
 horizontal_alignment = 1
 
-[node name="PauseMenu" parent="." unique_id=422357253 instance=ExtResource("2_pause")]
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 575.0
-offset_top = 333.0
-offset_right = 575.0
-offset_bottom = 333.0
-grow_horizontal = 1
-grow_vertical = 1
-size_flags_horizontal = 4
-size_flags_vertical = 4
+[node name="PauseMenu" parent="UI" unique_id=338603912 node_paths=PackedStringArray("SettingsMenu") instance=ExtResource("pause")]
+SettingsMenu = NodePath("../SettingsMenu")
 
-[node name="SettingsMenu" parent="." unique_id=1641372563 instance=ExtResource("3_settings")]
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_right = 1152.0
-offset_bottom = 648.0
-grow_horizontal = 1
-grow_vertical = 1
+[node name="SettingsMenu" parent="UI" unique_id=667816076 instance=ExtResource("settings")]

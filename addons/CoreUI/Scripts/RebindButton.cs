@@ -7,7 +7,7 @@ namespace CoreUI
     public partial class RebindButton : Button
     {
         [Export(PropertyHint.None, "The exact name of the action in the Input Map (e.g., 'jump')")] 
-        public string ActionName { get; set; } = "ui_accept";
+        public StringName ActionName = "save_game";
         
         private bool _isListening = false;
 
@@ -17,6 +17,7 @@ namespace CoreUI
             CallDeferred(MethodName.UpdateDisplayText);
             
             Pressed += OnButtonPressed;
+            VisibilityChanged += () => { if (!IsVisibleInTree()) { _isListening = false; UpdateDisplayText(); } };
             
             // Subscribe to update the text if the player swaps devices while looking at the menu
             if (InputManager.Instance != null)
@@ -42,7 +43,16 @@ namespace CoreUI
 
         public override void _Input(InputEvent @event)
         {
-            if (!_isListening) return;
+            if (!_isListening || !IsVisibleInTree()) return;
+            if (@event.IsEcho()) return;
+            if (@event.IsActionPressed("ui_cancel"))
+            {
+                _isListening = false;
+                UpdateDisplayText();
+                GrabFocus();
+                GetViewport().SetInputAsHandled();
+                return;
+            }
 
             // Ignore analog stick drift or mouse movement during rebinding
             if (@event is InputEventMouseMotion || @event is InputEventJoypadMotion) return;
@@ -73,7 +83,7 @@ namespace CoreUI
 
         private void UpdateDisplayText()
         {
-            if (string.IsNullOrEmpty(ActionName) || !InputMap.HasAction(ActionName))
+            if (ActionName.IsEmpty || !InputMap.HasAction(ActionName))
             {
                 Text = "Invalid Action";
                 return;

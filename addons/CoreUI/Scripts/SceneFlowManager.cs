@@ -1,89 +1,86 @@
 using Godot;
+using System;
+using System.Threading.Tasks;
 
-namespace CoreUI
+namespace CoreUI;
+
+public partial class SceneFlowManager : CanvasLayer
 {
-    public partial class SceneFlowManager : CanvasLayer
+    public static SceneFlowManager Instance { get; private set; }
+    [Export] public SceneReference MainMenuScene;
+    [Export(PropertyHint.Range, "0,2,0.05")] public float FadeDuration = 0.2f;
+    [Export] public Color FadeColor = Colors.Black;
+    public bool IsTransitioning { get; private set; }
+    private ColorRect _overlay;
+
+    public override void _EnterTree() { Instance = this; ProcessMode = ProcessModeEnum.Always; }
+    public override void _ExitTree() { if (Instance == this) Instance = null; }
+    public override void _Ready()
     {
-        public static SceneFlowManager Instance { get; private set; }
-
-        [Export] private float _fadeDuration = 0.3f;
-        [Export] private Color _fadeColor = Colors.Black;
-
-        private ColorRect _fadeOverlay;
-
-        public override void _EnterTree()
+        Layer = 100;
+        _overlay = new ColorRect { Color = FadeColor, MouseFilter = Control.MouseFilterEnum.Ignore };
+        AddChild(_overlay);
+        _overlay.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+        _overlay.Modulate = new Color(1, 1, 1, 0);
+    }
+    public override void _Input(InputEvent @event)
+    {
+        if (IsTransitioning) GetViewport().SetInputAsHandled();
+    }
+    public void ChangeScene(PackedScene scene) => _ = ChangeSceneAsync(scene);
+    public void ChangeScene(SceneReference scene) => _ = ChangeSceneAsync(scene?.LoadScene());
+    public void ReturnToMainMenu() => ChangeScene(MainMenuScene);
+    public void RestartCurrentScene()
+    {
+        var path = GetTree().CurrentScene?.SceneFilePath;
+        if (!string.IsNullOrEmpty(path)) ChangeScene(ResourceLoader.Load<PackedScene>(path));
+    }
+    public async Task<bool> ChangeSceneAsync(PackedScene scene)
+    {
+        if (IsTransitioning) return false;
+        if (scene == null || !scene.CanInstantiate())
         {
-            if (Instance != null && Instance != this)
-            {
-                QueueFree();
-                return;
-            }
-            Instance = this;
-            ProcessMode = ProcessModeEnum.Always; // Keep active while the tree is paused
+            GD.PushError("Scene destination is missing or invalid. Assign it in the Inspector.");
+            return false;
         }
-
-        public override void _Ready()
+        IsTransitioning = true;
+        var previousMenu = MenuManager.Instance?.ActiveMenu;
+        _overlay.MouseFilter = Control.MouseFilterEnum.Stop;
+        try
         {
-            Layer = 100; // Draw above all gameplay and menus
-            BuildOverlay();
-        }
-
-        private void BuildOverlay()
-        {
-            _fadeOverlay = new ColorRect
-            {
-                Color = _fadeColor,
-                MouseFilter = Control.MouseFilterEnum.Ignore
-            };
-            _fadeOverlay.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-            _fadeOverlay.Modulate = new Color(1, 1, 1, 0); // Fully transparent by default
-            AddChild(_fadeOverlay);
-        }
-
-        public async void ChangeScene(string scenePath)
-        {
-            // Block mouse clicks during transitions
-            _fadeOverlay.MouseFilter = Control.MouseFilterEnum.Stop;
-
-            // Fade to black
-            Tween fadeOut = CreateTween().SetPauseMode(Tween.TweenPauseMode.Process);
-            fadeOut.TweenProperty(_fadeOverlay, "modulate:a", 1.0f, _fadeDuration);
-            await ToSignal(fadeOut, Tween.SignalName.Finished);
-
-            // Adhere to design rules: reset pause state and clear menus
-            GetTree().Paused = false;
+            await Fade(1);
             MenuManager.Instance?.CloseAllMenus();
-
-            // Load new scene
-            Error err = GetTree().ChangeSceneToFile(scenePath);
-            if (err != Error.Ok)
+            PauseController.Instance?.SetPaused(false);
+            GetTree().Paused = false;
+            var error = GetTree().ChangeSceneToPacked(scene);
+            if (error != Error.Ok)
             {
-                GD.PrintErr($"[SceneFlowManager] Failed to load scene at: {scenePath}");
+                GD.PushError($"Scene change failed: {error}");
+                if (IsInstanceValid(previousMenu)) MenuManager.Instance?.OpenMenu(previousMenu);
+                return false;
             }
-
-            // Wait a frame for scene initialization
-            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
-
-            // Fade back in
-            Tween fadeIn = CreateTween().SetPauseMode(Tween.TweenPauseMode.Process);
-            fadeIn.TweenProperty(_fadeOverlay, "modulate:a", 0.0f, _fadeDuration);
-            await ToSignal(fadeIn, Tween.SignalName.Finished);
-
-            _fadeOverlay.MouseFilter = Control.MouseFilterEnum.Ignore;
+            await ToSignal(GetTree(), SceneTree.SignalName.SceneChanged);
+            await Fade(0);
+            return true;
         }
-
-        public void RestartCurrentScene()
+        catch (Exception error)
         {
-            string currentScenePath = GetTree().CurrentScene?.SceneFilePath;
-            if (!string.IsNullOrEmpty(currentScenePath))
-            {
-                ChangeScene(currentScenePath);
-            }
+            GD.PushError($"Scene transition failed: {error.Message}");
+            return false;
         }
-
-        public void QuitGame()
+        finally
         {
-            GetTree().Quit();
+            _overlay.Modulate = new Color(1, 1, 1, 0);
+            _overlay.MouseFilter = Control.MouseFilterEnum.Ignore;
+            IsTransitioning = false;
         }
     }
+    private async Task Fade(float alpha)
+    {
+        if (FadeDuration <= 0) { _overlay.Modulate = new Color(1, 1, 1, alpha); return; }
+        var tween = CreateTween().SetPauseMode(Tween.TweenPauseMode.Process);
+        tween.TweenProperty(_overlay, "modulate:a", alpha, FadeDuration);
+        await ToSignal(tween, Tween.SignalName.Finished);
+    }
+    public void QuitGame() => GetTree().Quit();
 }
