@@ -26,3 +26,7 @@ The `--smoke-test` argument isolates writes to `foundation_test_settings.cfg` an
 - Assign audio streams and confirm hover/click/open/close sounds play while paused.
 
 Headless checks do not certify physical gamepad feel, monitor-specific fullscreen behavior, final artwork, or exported-platform compatibility.
+
+## Cross-language check
+
+After building, also run the GDScriptInteropTest.tscn scene with -- --smoke-test. See [GDScript integration](GDSCRIPT_INTEGRATION.md) for the command and coverage. Expect GDSCRIPT INTEROP PASS and exit code 0. Run suites sequentially because they share isolated test settings.

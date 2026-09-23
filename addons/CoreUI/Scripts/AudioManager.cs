@@ -18,6 +18,12 @@ public partial class AudioManager : Node
         UIEventBus.OnPlayUISound += HandleUISound;
     }
     public override void _ExitTree() => UIEventBus.OnPlayUISound -= HandleUISound;
+    // Callable from either language; sound uses the UIEventBus.UISound values.
+    public void PlayUISound(int sound)
+    {
+        if (System.Enum.IsDefined(typeof(UIEventBus.UISound), sound))
+            UIEventBus.PlaySound((UIEventBus.UISound)sound);
+    }
     private void HandleUISound(UIEventBus.UISound sound)
     {
         var stream = sound switch

@@ -1,0 +1,58 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/CoreUI/Examples/GDScriptDemo.gd" id="controller"]
+[ext_resource type="PackedScene" path="res://addons/CoreUI/Scenes/PauseMenu.tscn" id="pause"]
+[ext_resource type="PackedScene" path="res://addons/CoreUI/Scenes/SettingsMenu.tscn" id="settings"]
+
+[node name="GDScriptDemo" type="Node2D" node_paths=PackedStringArray("pause_menu", "status_label")]
+script = ExtResource("controller")
+pause_menu = NodePath("UI/PauseMenu")
+status_label = NodePath("UI/HUD/Center/Content/Hint")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="HUD" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Background" type="ColorRect" parent="UI/HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.04, 0.07, 0.11, 1)
+
+[node name="Center" type="CenterContainer" parent="UI/HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Content" type="VBoxContainer" parent="UI/HUD/Center"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="UI/HUD/Center/Content"]
+layout_mode = 2
+text = "GDScript foundation demo"
+horizontal_alignment = 1
+
+[node name="Hint" type="Label" parent="UI/HUD/Center/Content"]
+layout_mode = 2
+text = "Esc / Menu / B: pause. F5 / Y: save."
+horizontal_alignment = 1
+
+[node name="PauseMenu" parent="UI" node_paths=PackedStringArray("SettingsMenu") instance=ExtResource("pause")]
+SettingsMenu = NodePath("../SettingsMenu")
+
+[node name="SettingsMenu" parent="UI" instance=ExtResource("settings")]

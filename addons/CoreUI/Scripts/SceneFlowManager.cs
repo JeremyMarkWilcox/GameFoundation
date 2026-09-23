@@ -6,6 +6,7 @@ namespace CoreUI;
 
 public partial class SceneFlowManager : CanvasLayer
 {
+    [Signal] public delegate void TransitionFinishedEventHandler(bool succeeded);
     public static SceneFlowManager Instance { get; private set; }
     [Export] public SceneReference MainMenuScene;
     [Export(PropertyHint.Range, "0,2,0.05")] public float FadeDuration = 0.2f;
@@ -29,6 +30,15 @@ public partial class SceneFlowManager : CanvasLayer
     }
     public void ChangeScene(PackedScene scene) => _ = ChangeSceneAsync(scene);
     public void ChangeScene(SceneReference scene) => _ = ChangeSceneAsync(scene?.LoadScene());
+    // Distinct names avoid overloaded-method ambiguity across languages.
+    // True means accepted. Await TransitionFinished for the eventual result.
+    public bool RequestScene(PackedScene scene)
+    {
+        if (IsTransitioning || scene == null || !scene.CanInstantiate()) return false;
+        _ = ChangeSceneAsync(scene);
+        return true;
+    }
+    public bool RequestSceneReference(SceneReference scene) => RequestScene(scene?.LoadScene());
     public void ReturnToMainMenu() => ChangeScene(MainMenuScene);
     public void RestartCurrentScene()
     {
@@ -44,6 +54,7 @@ public partial class SceneFlowManager : CanvasLayer
             return false;
         }
         IsTransitioning = true;
+        bool succeeded = false;
         var previousMenu = MenuManager.Instance?.ActiveMenu;
         _overlay.MouseFilter = Control.MouseFilterEnum.Stop;
         try
@@ -61,6 +72,7 @@ public partial class SceneFlowManager : CanvasLayer
             }
             await ToSignal(GetTree(), SceneTree.SignalName.SceneChanged);
             await Fade(0);
+            succeeded = true;
             return true;
         }
         catch (Exception error)
@@ -73,6 +85,7 @@ public partial class SceneFlowManager : CanvasLayer
             _overlay.Modulate = new Color(1, 1, 1, 0);
             _overlay.MouseFilter = Control.MouseFilterEnum.Ignore;
             IsTransitioning = false;
+            EmitSignal(SignalName.TransitionFinished, succeeded);
         }
     }
     private async Task Fade(float alpha)

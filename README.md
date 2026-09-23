@@ -52,3 +52,7 @@ See [the proposed starter roadmap](docs/STARTER_ROADMAP.md) for the build order 
 See `docs/SMOKE_TESTS.md` for automated and manual checks, `docs/GDD_TEMPLATE.md` for new-game planning, and `docs/FRAMEWORK_STATUS.md` for scope.
 
 Make common fixes in this foundation first, run the checks, then bring the relevant files into each active project. Do not replace a game's entire customized UI/configuration when updating shared scripts. Create each new copy intentionally when that game or starter becomes the active task. Keep a foundation version or source commit in its README and GDD.
+
+## GDScript integration
+
+Gameplay can use GDScript with the shared C# globals. See [the integration guide](docs/GDSCRIPT_INTEGRATION.md) for Inspector composition, save access, signals and the runnable example. Godot .NET and a C# build remain required.

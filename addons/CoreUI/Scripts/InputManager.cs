@@ -19,6 +19,7 @@ namespace CoreUI
 
         // Fired whenever the player swaps between controller and keyboard
         public event Action<InputDevice> OnDeviceChanged;
+        [Signal] public delegate void DeviceChangedEventHandler(int device);
 
         private static string SettingsFilePath => SettingsStore.Path;
 
@@ -67,6 +68,7 @@ namespace CoreUI
 
             // Device detection is global; the active menu/player owns mouse policy.
             OnDeviceChanged?.Invoke(CurrentDevice);
+            EmitSignal(SignalName.DeviceChanged, (int)CurrentDevice);
         }
 
         /// <summary>
